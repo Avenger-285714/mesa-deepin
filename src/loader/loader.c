@@ -72,6 +72,8 @@
 #define PATH_MAX 4096
 #endif
 
+__attribute__((visibility("default"))) void zx_print_driver_map_list(void);
+
 static void default_logger(int level, const char *fmt, ...)
 {
    if (level <= _LOADER_WARNING) {
@@ -79,6 +81,18 @@ static void default_logger(int level, const char *fmt, ...)
       va_start(args, fmt);
       vfprintf(stderr, fmt, args);
       va_end(args);
+   }
+}
+
+void zx_print_driver_map_list(void)
+{
+   int i=0;
+
+   printf("os mesa driver map list:\n");
+   while(driver_map[i].driver)
+   {
+       printf("vendor_id: %x, driver: %s\n", driver_map[i].vendor_id, driver_map[i].driver);
+       i++;
    }
 }
 

@@ -44,6 +44,12 @@ static const int vmwgfx_chip_ids[] = {
 #undef CHIPSET
 };
 
+static const int zx_chip_ids[] = {
+#define CHIPSET(chip, family) chip,
+#include "pci_ids/zx_pci_ids.h"
+#undef CHIPSET
+};
+
 bool iris_predicate(int fd, const char *driver);
 bool nouveau_zink_predicate(int fd, const char *driver);
 
@@ -64,6 +70,7 @@ static const struct {
    { 0x10de, "zink", NULL, -1, nouveau_zink_predicate },
    { 0x1af4, "virtio_gpu", virtio_gpu_chip_ids, ARRAY_SIZE(virtio_gpu_chip_ids) },
    { 0x15ad, "vmwgfx", vmwgfx_chip_ids, ARRAY_SIZE(vmwgfx_chip_ids) },
+   { 0x1d17, "zx", zx_chip_ids, ARRAY_SIZE(zx_chip_ids), },
 };
 
 #endif /* _PCI_ID_DRIVER_MAP_H_ */

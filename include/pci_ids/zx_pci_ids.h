@@ -1,0 +1,2 @@
+CHIPSET(0x3A03, Exc)
+CHIPSET(0x3A04, Exc)
