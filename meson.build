@@ -129,21 +129,21 @@ if gallium_drivers.contains('auto')
     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
       gallium_drivers = [
         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'svga', 'llvmpipe', 'softpipe',
-        'iris', 'crocus', 'i915', 'zink'
+        'iris', 'crocus', 'i915', 'zink', 'etnaviv"'
       ]
     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
       gallium_drivers = [
         'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
         'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
-        'zink'
+        'zink', 'r300', 'r600', 'radeonsi', 'svga', 'asiha'
       ]
     elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
       gallium_drivers = [
-        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'llvmpipe', 'softpipe', 'zink'
+        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'llvmpipe', 'softpipe', 'zink', 'iris', 'etnaviv'
       ]
     elif ['loongarch64'].contains(host_machine.cpu_family())
       gallium_drivers = [
-        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'etnaviv', 'llvmpipe', 'softpipe', 'zink'
+        'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'etnaviv', 'llvmpipe', 'softpipe', 'zink', 'iris'
       ]
     else
       error('Unknown architecture @0@. Please pass -Dgallium-drivers to set driver options. Patches gladly accepted to fix this.'.format(
@@ -219,13 +219,22 @@ _vulkan_drivers = get_option('vulkan-drivers')
 if _vulkan_drivers.contains('auto')
   if system_has_kms_drm
     if host_machine.cpu_family().startswith('x86')
-      _vulkan_drivers = ['amd', 'intel', 'intel_hasvk', 'nouveau', 'swrast']
+      _vulkan_drivers = [
+        'amd', 'intel', 'intel_hasvk', 'nouveau', 'swrast', 'virtio'
+      ]
     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
-      _vulkan_drivers = ['swrast', 'intel']
+      _vulkan_drivers = [
+        'amd', 'broadcom', 'freedreno', 'intel', 'nouveau', 'panfrost',
+        'swrast', 'virtio'
+      ]
     elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
-      _vulkan_drivers = ['amd', 'swrast']
+      _vulkan_drivers = [
+        'amd', 'intel', 'nouveau', 'swrast', 'virtio'
+      ]
     elif ['loongarch64'].contains(host_machine.cpu_family())
-      _vulkan_drivers = ['amd', 'swrast']
+      _vulkan_drivers = [
+        'amd', 'intel', 'nouveau', 'swrast', 'virtio'
+      ]
     else
       error('Unknown architecture @0@. Please pass -Dvulkan-drivers to set driver options. Patches gladly accepted to fix this.'.format(
             host_machine.cpu_family()))
