@@ -1,3 +1,9 @@
+mesa-pvr-ddk242 (24.0.1-1deepin3+really24.0.9) unstable; urgency=medium
+
+  * add a733 support, fetch upstream changes
+
+ -- Chang Yang <yangchang@deepin.org>  Fri, 07 Nov 2025 12:20:14 +0800
+
 mesa-pvr-ddk242 (24.0.1-1deepin2+really24.0.9) unstable; urgency=medium
 
   * do not default glx to zink
@@ -15,4 +21,3 @@ mesa-pvr-ddk242 (24.0.1-1deepin0) unstable; urgency=medium
   * add pvr
 
  -- Chang Yang <yangchang@deepin.org>  Thu, 17 Apr 2025 16:27:54 +0800
-

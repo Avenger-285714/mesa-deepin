@@ -55,6 +55,8 @@ override_dh_install:
 	find debian/tmp/ -name '*.la' -exec rm '{}' ';'
 	ln -sfv pvr_gbm.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gbm/spacemit_gbm.so
 	ln -sfv pvr_gbm.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gbm/es_drm_gbm.so
+	ln -sfv pvr_gbm.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gbm/vs_drm_gbm.so
+	ln -sfv pvr_gbm.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gbm/sunxi-drm_gbm.so
 	mv debian/tmp/usr/share/glvnd/egl_vendor.d/50_pvr.json \
 		debian/tmp/usr/share/glvnd/egl_vendor.d/40_pvr.json
 

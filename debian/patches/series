@@ -2,8 +2,8 @@
 0002-change-LIBGL_ALWAYS_SOFTWARE-to-PVRGL_ALWAYS_SOFTWAR.patch
 0003-Revert-gbm-add-gbm_bo_blit.patch
 0004-gbm-backend-ize.patch
-0005-add-dri-aliases.patch
-0006-hardcode-supported-display-drivers.patch
+0005-hardcode-supported-display-drivers.patch
+0006-rename-gbm-backend-to-prevent-being-picked-by-mainli.patch
 1001-glx-dri3-handle-zink-fallback-if-loader-picks-it.patch
 1002-zink-do-not-expose-quad-support-when-no-geometry-sha.patch
 1003-zink-emit-consts-as-uint-only-on-IMG-proprietary-dri.patch
