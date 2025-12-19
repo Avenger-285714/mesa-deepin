@@ -13,10 +13,15 @@
 
 struct nvkmd_mem;
 
+struct nvk_image;
+
 struct nvk_device_memory {
    struct vk_device_memory vk;
 
    struct nvkmd_mem *mem;
+
+   /** Dedicated image for this memory allocation, if any */
+   struct nvk_image *dedicated_image;
 };
 
 VK_DEFINE_NONDISP_HANDLE_CASTS(nvk_device_memory, vk.base, VkDeviceMemory,

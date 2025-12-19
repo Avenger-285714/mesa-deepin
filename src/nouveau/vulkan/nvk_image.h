@@ -79,6 +79,18 @@ struct nvk_image {
     */
    bool disjoint;
 
+   /** True if this image can be compressed
+    *
+    * This is set at image creation time based on image properties.
+    */
+   bool can_compress;
+
+   /** True if this image is actually compressed
+    *
+    * This is set at bind time when compression is enabled.
+    */
+   bool is_compressed;
+
    uint8_t plane_count;
    struct nvk_image_plane planes[3];
 

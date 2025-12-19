@@ -285,6 +285,8 @@ nouveau_ws_device_new(drmDevicePtr drm_device)
    drmFreeVersion(ver);
    ver = NULL;
 
+   device->nouveau_version = version;
+
    if (version < 0x01000301)
       goto out_err;
 

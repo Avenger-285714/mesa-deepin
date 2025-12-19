@@ -16,6 +16,7 @@ pub type ImageUsageFlags = u8;
 pub const IMAGE_USAGE_2D_VIEW_BIT: ImageUsageFlags = 1 << 0;
 pub const IMAGE_USAGE_LINEAR_BIT: ImageUsageFlags = 1 << 1;
 pub const IMAGE_USAGE_SPARSE_RESIDENCY_BIT: ImageUsageFlags = 1 << 2;
+pub const IMAGE_USAGE_UNCOMPRESSED_BIT: ImageUsageFlags = 1 << 3;
 
 #[derive(Clone, Debug, Copy, PartialEq, Default)]
 #[repr(u8)]
@@ -180,6 +181,7 @@ pub struct Image {
     pub compressed: bool,
     pub tile_mode: u16,
     pub pte_kind: u8,
+    pub compressed_pte_kind: u8,
 }
 
 impl Image {
@@ -253,6 +255,7 @@ impl Image {
             compressed: false,
             tile_mode: 0,
             pte_kind: 0,
+            compressed_pte_kind: 0,
             mip_tail_first_lod: 0,
         };
 
@@ -351,6 +354,15 @@ impl Image {
                 info.format,
                 info.samples,
                 image.compressed,
+            );
+
+            // Always compute compressed_pte_kind for potential future use
+            // (e.g., dedicated allocations with compression)
+            image.compressed_pte_kind = Self::choose_pte_kind(
+                dev,
+                info.format,
+                info.samples,
+                true, // compressed = true
             );
 
             if info.modifier != DRM_FORMAT_MOD_INVALID {

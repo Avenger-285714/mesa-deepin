@@ -27,6 +27,11 @@ struct nouveau_ws_device {
    struct hash_table *bos;
 
    bool has_vm_bind;
+
+   /* Nouveau kernel driver version, packed as:
+    * (major << 24) | (minor << 8) | patchlevel
+    */
+   uint32_t nouveau_version;
 };
 
 struct nouveau_ws_device *nouveau_ws_device_new(struct _drmDevice *drm_device);
