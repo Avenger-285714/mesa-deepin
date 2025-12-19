@@ -41,11 +41,15 @@ const VkExternalMemoryProperties nvk_dma_buf_mem_props = {
 
 static enum nvkmd_mem_flags
 nvk_memory_type_flags(const VkMemoryType *type,
-                      VkExternalMemoryHandleTypeFlagBits handle_types)
+                      VkExternalMemoryHandleTypeFlagBits handle_types,
+                      bool pinned_to_vram)
 {
    enum nvkmd_mem_flags flags = 0;
    if (type->propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-      flags = NVKMD_MEM_LOCAL;
+      if (pinned_to_vram)
+         flags = NVKMD_MEM_VRAM;
+      else
+         flags = NVKMD_MEM_LOCAL;
    else
       flags = NVKMD_MEM_GART;
 
@@ -88,9 +92,16 @@ nvk_GetMemoryFdPropertiesKHR(VkDevice device,
       type_bits = BITFIELD_MASK(pdev->mem_type_count);
    } else {
       for (unsigned t = 0; t < ARRAY_SIZE(pdev->mem_types); t++) {
-         const enum nvkmd_mem_flags flags =
-            nvk_memory_type_flags(&pdev->mem_types[t], handleType);
-         if (!(flags & ~mem->flags))
+         const VkMemoryType *type = &pdev->mem_types[t];
+         const enum nvkmd_mem_flags type_flags =
+            nvk_memory_type_flags(type, handleType, false);
+
+         /* Flags required to be set on mem to be imported as type
+          *
+          * We also require the memory to be shared because all importable
+          * memory is shared.
+          */
+         if (!(type_flags & ~mem->flags))
             type_bits |= (1 << t);
       }
    }
@@ -128,15 +139,19 @@ nvk_AllocateMemory(VkDevice device,
    if (fd_info != NULL)
       handle_types |= fd_info->handleType;
 
-   const enum nvkmd_mem_flags flags = nvk_memory_type_flags(type, handle_types);
+   bool pinned_to_vram = false;
 
-   uint32_t alignment = (1ULL << 12);
-   if (flags & NVKMD_MEM_LOCAL)
-      alignment = (1ULL << 16);
+   /* Align to os page size (typically 4K) as a start as this works for
+    * everything, and then depending on placement and size, we either keep
+    * it as is or increase it to 64K or 2M.
+    */
+   uint32_t alignment = pdev->nvkmd->bind_align_B;
 
    uint8_t pte_kind = 0, tile_mode = 0;
+   struct nvk_image *dedicated_image = NULL;
    if (dedicated_info != NULL) {
       VK_FROM_HANDLE(nvk_image, image, dedicated_info->image);
+      dedicated_image = image;
       if (image != NULL &&
           image->vk.tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT) {
          /* This image might be shared with GL so we need to set the BO flags
@@ -146,8 +161,24 @@ nvk_AllocateMemory(VkDevice device,
          alignment = MAX2(alignment, image->planes[0].nil.align_B);
          pte_kind = image->planes[0].nil.pte_kind;
          tile_mode = image->planes[0].nil.tile_mode;
+      } else if (image != NULL && image->can_compress) {
+         /* If it's a dedicated alloc and it's not modifiers, then it's marked
+          * for compression and larger pages, so we set the pinned bit and up
+          * the alignment.
+          */
+         pinned_to_vram = true;
+         pte_kind = image->planes[0].nil.compressed_pte_kind;
+         tile_mode = image->planes[0].nil.tile_mode;
+         /* Align to 2MiB if size is >= 2MiB, otherwise align to 64KiB. */
+         if (pAllocateInfo->allocationSize >= (1ULL << 21))
+            alignment = (1ULL << 21);
+         else
+            alignment = (1ULL << 16);
       }
    }
+
+   const enum nvkmd_mem_flags flags =
+      nvk_memory_type_flags(type, handle_types, pinned_to_vram);
 
    const uint64_t aligned_size =
       align64(pAllocateInfo->allocationSize, alignment);
@@ -156,6 +187,8 @@ nvk_AllocateMemory(VkDevice device,
                                  pAllocator, sizeof(*mem));
    if (!mem)
       return vk_error(dev, VK_ERROR_OUT_OF_HOST_MEMORY);
+
+   mem->dedicated_image = dedicated_image;
 
    if (fd_info && fd_info->handleType) {
       assert(fd_info->handleType ==

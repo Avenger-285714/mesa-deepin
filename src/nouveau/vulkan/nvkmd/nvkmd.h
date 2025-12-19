@@ -114,6 +114,7 @@ struct nvkmd_info {
    bool has_alloc_tiled;
    bool has_map_fixed;
    bool has_overmap;
+   bool has_compression;
 };
 
 struct nvkmd_pdev_ops {
