@@ -90,6 +90,8 @@ check_directories_created(void *mem_ctx, const char *cache_dir)
       struct stat sb;
       if (stat(full_path, &sb) != -1 && S_ISDIR(sb.st_mode))
          sub_dirs_created = true;
+
+      free(buf);
    }
 
    EXPECT_TRUE(sub_dirs_created) << "create sub dirs";

@@ -129,13 +129,13 @@ if gallium_drivers.contains('auto')
     if ['x86', 'x86_64'].contains(host_machine.cpu_family())
       gallium_drivers = [
         'r300', 'r600', 'radeonsi', 'nouveau', 'virgl', 'svga', 'llvmpipe', 'softpipe',
-        'iris', 'crocus', 'i915', 'zink', 'etnaviv"'
+        'iris', 'crocus', 'i915', 'zink', 'etnaviv'
       ]
     elif ['arm', 'aarch64'].contains(host_machine.cpu_family())
       gallium_drivers = [
         'v3d', 'vc4', 'freedreno', 'etnaviv', 'nouveau', 'svga',
         'tegra', 'virgl', 'lima', 'panfrost', 'llvmpipe', 'softpipe', 'iris',
-        'zink', 'r300', 'r600', 'radeonsi', 'svga', 'asiha'
+        'zink', 'r300', 'r600', 'radeonsi', 'asahi'
       ]
     elif ['mips', 'mips64', 'ppc', 'ppc64', 'riscv32', 'riscv64'].contains(host_machine.cpu_family())
       gallium_drivers = [
